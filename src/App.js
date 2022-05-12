@@ -4,8 +4,9 @@ function App() {
   return (
     <Wheel
       mirrorOn={true}
-      values={["Zeymer", "Benny", "Kim", "Celine"]}
-      colors={["#f2d398", "#e8ebf7", "#247b7b", "red"]}
+      values={["Æble", "Pærer", "Banan", "Hindbær"]}
+      colors={["#f2d398", "#e8ebf7", "#247b7b", "red", "blue"]}
+      startDeg={20}
     />
   )
 }
