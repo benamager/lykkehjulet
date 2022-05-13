@@ -1,13 +1,12 @@
 import Wheel from "./components/Wheel"
+import WheelHeader from "./components/WheelHeader"
 
 function App() {
   return (
-    <Wheel
-      mirrorOn={true}
-      values={["Æble", "Pærer", "Banan", "Hindbær"]}
-      colors={["#f2d398", "#e8ebf7", "#247b7b", "red", "blue"]}
-      startDeg={20}
-    />
+    <>
+      <WheelHeader />
+      <Wheel values={["Æble", "Pærer", "Banan", "Hindbær", "Blåbær"]} />
+    </>
   )
 }
 
