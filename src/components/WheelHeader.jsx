@@ -1,8 +1,9 @@
-const WheelHeader = () => {
+const WheelHeader = (props) => {
+  const { title, result } = props
   return (
     <div>
-      <h2>Hjul uden navn</h2>
-      <h1>Lykkehjulet</h1>
+      <h2>{title}</h2>
+      <h1>{result}</h1>
     </div>
   )
 }

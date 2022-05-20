@@ -2,10 +2,19 @@
 import { css } from "@emotion/react"
 import { nanoid } from "nanoid"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import ComputedDegrees from "./customHooks/ComputedDegrees"
 
 const Wheel = (props) => {
-  const { values, colors, mirrorOn, startDeg, rotations, rotationTime } = {
+  const {
+    values,
+    colors,
+    mirrorOn,
+    startDeg,
+    rotations,
+    rotationTime,
+    withNotch,
+  } = {
     ...props,
     mirrorOn: props.values.length < 6 ? props.mirrorOn : false,
   }
@@ -25,17 +34,50 @@ const Wheel = (props) => {
       ? [...colorsDelExcess, ...colorsDelExcess]
       : [...colorsDelExcess]
 
+  // Saving the values and their given degrees
+  let resDeg = []
+
   // Generates the conic gradient
   const generatedConicGradient = allValues.map((value, index) => {
     // Only + the currentDegrees when index > 0
     if (index > 0) currentDegrees = currentDegrees + piePieceDeg
+
+    // console.log(value)
+    // console.log(currentDegrees)
+    // console.log((index + 1) * piePieceDeg)
+    let endingDegrees = (index + 1) * piePieceDeg
+
+    // [0, 60, "Blåbar"] saves from which degrees the result is
+    resDeg = [...resDeg, [currentDegrees, endingDegrees, value]]
+
     // Returns the color & start-deg & end-deg
-    return `${allColors[index]} ${currentDegrees}deg ${
-      (index + 1) * piePieceDeg
-    }deg`
+    return `${allColors[index]} ${currentDegrees}deg ${endingDegrees}deg`
+  })
+
+  const [notch, setNotch] = useState({
+    rotate: "0deg",
+    bottom: "0",
   })
 
   const styles = {
+    outerContainer: css`
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 300px;
+    `,
+    notch: css`
+      width: 0;
+      height: 0;
+      border-left: 13px solid transparent;
+      border-right: 13px solid transparent;
+      border-top: 40px solid #000000;
+      position: relative;
+      z-index: 1000;
+      transition: all 0.5s;
+      transform: rotate(-${notch.rotate});
+      bottom: ${notch.bottom};
+    `,
     wheelContainer: css`
       display: grid;
       place-items: center center;
@@ -121,6 +163,10 @@ const Wheel = (props) => {
   function clicked(e) {
     if (!isSpinning) {
       setIsSpinning(true)
+      setNotch({
+        rotate: "30deg",
+        bottom: "0",
+      })
       winningDeg = Math.ceil(Math.random() * 360)
       setWinDeg(winningDeg)
       e.target.style.transform = `rotate(${winningDeg + 360 * rotations}deg)`
@@ -131,20 +177,37 @@ const Wheel = (props) => {
   function endSpin(e) {
     e.target.style.transition = "unset"
     e.target.style.transform = `rotate(${winDeg}deg)`
+    setNotch({
+      rotate: "0deg",
+      bottom: "-1rem",
+    })
     setTimeout(() => {
       setIsSpinning(false)
       e.target.style.transition = `transform ${rotationTime} ease-out`
     }, 200)
   }
 
+  // Gets the result of the wheel from the given degree
+  function getResult(degree) {
+    resDeg.forEach((result) => {
+      if (degree >= result[0] && degree <= result[1]) {
+        console.log(result[2])
+      }
+    })
+  }
+
   return (
-    <div
-      onClick={clicked}
-      onTransitionEnd={endSpin}
-      css={styles.wheelContainer}
-    >
-      <div css={styles.wheelCenter}></div>
-      <ul css={styles.wheel}>{valuesMapped}</ul>
+    <div css={styles.outerContainer}>
+      <div css={styles.notch}></div>
+      <div
+        onClick={clicked}
+        onTransitionEnd={endSpin}
+        css={styles.wheelContainer}
+        id="wheel"
+      >
+        <div css={styles.wheelCenter}></div>
+        <ul css={styles.wheel}>{valuesMapped}</ul>
+      </div>
     </div>
   )
 }
